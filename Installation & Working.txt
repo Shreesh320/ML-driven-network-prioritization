@@ -1,0 +1,23 @@
+# Install ryu and mininet
+sudo apt-get install mininet
+pip install ryu
+(optional environment)
+python3 -m venv ryu-env
+source ryu-env/bin/activate
+pip install ryu scikit-learn pandas joblib
+# Run Controller
+export PYTHONPATH="$PWD:$PYTHONPATH"
+ryu-manager ryu_apps/ml_priority.py ryu_apps/flow_poller.py
+# Run Mininet
+sudo mn --topo single,3 --controller=remote,ip=127.0.0.1 --switch ovs
+# Generate Traffic in Mininet CLI
+# TEST CONNECTIVITY
+pingall
+# TCP TRAFFIC
+h1 iperf -s &
+h2 iperf -c h1 -t 10
+# UDP TRAFFIC
+h3 iperf -u -s &
+h1 iperf -u -c 10.0.0.3 -b 50M -t 10
+# CSV HEADER(strictly like this)
+timestamp,dpid,table_id,in_port,eth_src,eth_dst,ip_src,ip_dst,eth_type,ip_proto,src_port,dst_port,n_packets,n_bytes,duration_sec,entry_type,throughput_bps,priority_labe
